@@ -119,17 +119,40 @@ class SyncTests(unittest.TestCase):
         self.assertEqual((self.root / "gallery.json").read_bytes(), original)
         self.assertFalse(list((self.root / "images").glob("*")))
         self.assertFalse(list((self.root / "workflows").glob("*")))
-        self.assertFalse((self.root / ".gallery-sync.lock").exists())
+        with sync.sync_lock(self.root):
+            pass
         (self.root / "gallery.json").write_text("invalid", encoding="utf-8")
         with self.assertRaises(ValueError):
             sync.sync(self.root)
         self.assertEqual((self.root / "gallery.json").read_text(), "invalid")
 
     def test_lock_blocks_second_writer(self):
+        if sync.os.name == "nt":
+            with sync.sync_lock(self.root):
+                with self.assertRaises(ValueError):
+                    sync.sync(self.root)
+            with sync.sync_lock(self.root):
+                pass
+            return
         (self.root / ".gallery-sync.lock").write_text("running")
         with self.assertRaises(ValueError):
             sync.sync(self.root)
         self.assertEqual((self.root / ".gallery-sync.lock").read_text(), "running")
+
+    @unittest.skipUnless(sync.os.name == "nt", "Windows kernel locking")
+    def test_windows_lock_recovers_after_forced_exit(self):
+        code = "import sys,time; from pathlib import Path; sys.path.insert(0, sys.argv[1]); import sync_gallery as s\nwith s.sync_lock(Path(sys.argv[2])):\n print('locked', flush=True)\n time.sleep(30)"
+        process = subprocess.Popen([sys.executable, "-c", code, str(Path(sync.__file__).parent), str(self.root)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
+        try:
+            self.assertEqual(process.stdout.readline().strip(), "locked")
+            with self.assertRaises(ValueError):
+                with sync.sync_lock(self.root):
+                    pass
+        finally:
+            process.kill()
+            process.communicate(timeout=10)
+        with sync.sync_lock(self.root):
+            pass
 
     def prepare_git(self):
         # Identity is fixture-only, never applied to the user's repository.
@@ -238,6 +261,11 @@ class SyncTests(unittest.TestCase):
     def test_watch_recovers_from_transient_error(self):
         with patch.object(sync, "sync", side_effect=[ValueError("temporary error"), (0, 0)]) as synchronizing, patch.object(sync.time, "sleep", side_effect=[None, KeyboardInterrupt]):
             self.assertEqual(sync.watch(self.root), 0)
+            self.assertEqual(synchronizing.call_count, 2)
+
+    def test_watch_recovers_after_git_timeout(self):
+        with patch.object(sync, "sync", side_effect=[subprocess.TimeoutExpired("git push", 120), (0, 0)]) as synchronizing, patch.object(sync.time, "sleep", side_effect=[None, KeyboardInterrupt]):
+            self.assertEqual(sync.watch(self.root, push=True), 0)
             self.assertEqual(synchronizing.call_count, 2)
 
     def test_watch_retries_failed_push_without_duplicate_commit(self):

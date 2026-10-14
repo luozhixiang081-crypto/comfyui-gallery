@@ -67,7 +67,7 @@ python sync_gallery.py
 - 从 KSampler 上游追溯 CheckpointLoaderSimple / UNETLoader、正负 CLIPTextEncode 与采样参数；复杂连线无法解析时按前两个 CLIPTextEncode 文本兜底并打印警告。多个 KSampler 使用第一个。
 - 缺少或损坏的元数据不编造：模型“未知模型”、文本空字符串、未知数值 null；workflow_file 为空时前端禁用下载。坏 PNG 跳过并报告，其他好图继续导入，有坏图时退出码 1。
 - uint64 seed 超过 JavaScript 安全整数时保存为十进制字符串，避免前端舍入。
-- gallery.json 原子替换、独占同步锁、失败时只清理本轮新文件；源图片不修改。进程异常退出若遗留锁，确认没有同步进程后删除 `.gallery-sync.lock` 再运行。
+- gallery.json 原子替换、独占同步锁、失败时只清理本轮新文件；源图片不修改。Windows 使用系统文件锁，强制停止或重启后自动释放；`.gallery-sync.lock` 空闲时保留，不要手动删除正在使用的锁文件。非 Windows 平台若异常遗留锁，确认没有同步进程后再删除。
 - 切换源目录时同名 source_file 仍视为已收录；改变根目录前请确认不会与已有来源重名。
 
 ## 实时监控（10 秒轮询）
@@ -81,7 +81,28 @@ python sync_gallery.py --watch --push
 
 空闲时不执行 git push；网络推送失败会保留本地归档/提交，在后续轮询重试，不重复创建记录或提交。临时目录/解析错误会警告并继续；Ctrl+C 停止。原有“禁止夹带非同步改动或已有暂存”的保护保留。
 
-这是持续运行的终端程序，不会自动创建开机任务、Windows 服务或隐藏常驻进程。本次实现和测试后没有保留后台监控，需你运行上述命令开启。
+## Windows 后台常驻与登录自启
+
+本机使用 Windows 计划任务 `ComfyUI-Gallery-Watcher`，等效运行 `python sync_gallery.py --watch --push`，无需开着终端或 Codex。重新安装：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install_watcher.ps1
+```
+
+启动器复用原监控函数，使用 pythonw 隐藏运行；任务以当前用户普通权限执行，在该用户登录 30 秒后自动启动，并立即启动一次。**这是开机登录后自启，不是未登录就运行的系统服务**；不保存 Windows 或 GitHub 密码，沿用当前用户 Git Credential Manager 授权。退出登录或关机期间不运行，睡眠期间暂停；恢复运行后补扫未收录的 PNG。
+
+计划任务禁止重复实例、无运行时长上限、不因电池供电停止；进程异常退出后每分钟重启，最多重试 999 次。Git 调用超时为 120 秒，网络/授权失败写日志并后续重试，不弹出登录窗口。授权失效时仍需要人工重新授权；存在其他未提交代码改动时安全暂停同步，需先提交，避免夹带上传。
+
+日志：`.local/watcher.log`（UTF-8，2 MiB × 当前文件及 3 个备份，约 8 MiB 上限），已忽略，不上传。Git 绝对目录由安装器写入任务参数；若移动 Python、Git 或项目目录，请重新安装任务。后台运行不依赖 Codex 窗口，但使用现有 Codex 随附 Git；若将其卸载，需安装 Git 并重新注册任务。
+
+```powershell
+Get-ScheduledTask -TaskName ComfyUI-Gallery-Watcher
+Get-Content .\.local\watcher.log -Tail 15
+Stop-ScheduledTask -TaskName ComfyUI-Gallery-Watcher   # 本次停止，下次登录仍自启
+Disable-ScheduledTask -TaskName ComfyUI-Gallery-Watcher # 关闭自启
+# 重新开启：Enable-ScheduledTask -TaskName ComfyUI-Gallery-Watcher
+# 立即启动：Start-ScheduledTask -TaskName ComfyUI-Gallery-Watcher
+```
 
 ## 可选 Git 推送
 
@@ -107,7 +128,7 @@ commit 保存本地版本；push 才会上传到 GitHub。不要把账号密码�
 python -m unittest discover -s tests -v
 ```
 
-15 项测试在独立临时目录进行；监控覆盖 10 秒间隔、写入稳定性、发现新图、空闲不推送、暂时错误恢复、失败 push 重试和 Ctrl+C 停止。Git 测试只推到临时本地裸仓库，**不推送 GitHub**，不会在真实 ComfyUI output 或画廊中制造测试记录。
+20 项测试在独立临时目录进行；覆盖原有解析/同步、监控 10 秒间隔、写入稳定性、空闲不推送、错误/超时恢复、失败 push 重试、Ctrl+C 停止，以及 Windows 锁在强制退出后释放、后台日志缓冲/轮转和缺 Git 的故障日志。Git 测试只推到临时本地裸仓库，**不推送 GitHub**，不会在真实 ComfyUI output 或画廊中制造测试记录。
 
 ## GitHub Pages
 

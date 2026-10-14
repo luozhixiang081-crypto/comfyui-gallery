@@ -22,3 +22,4 @@ Thumbs.db
 raw_output/
 .gallery-sync.lock
 *.sync-tmp
+.local/

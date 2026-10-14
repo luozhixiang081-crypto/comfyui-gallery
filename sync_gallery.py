@@ -156,6 +156,24 @@ def atomic_gallery(path, data):
 @contextmanager
 def sync_lock(root):
     lock = root / ".gallery-sync.lock"
+    # OS locks are released even after a forced stop or Windows restart.
+    if os.name == "nt":
+        import msvcrt
+        with lock.open("a+b") as handle:
+            if handle.seek(0, os.SEEK_END) == 0:
+                handle.write(b"0")
+                handle.flush()
+            handle.seek(0)
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError:
+                raise ValueError("已有同步进程正在写入；稍后重试。") from None
+            try:
+                yield
+            finally:
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        return
     try:
         handle = lock.open("x", encoding="utf-8")
     except FileExistsError:
@@ -169,7 +187,7 @@ def sync_lock(root):
 
 
 def git(root, *arguments):
-    return subprocess.run(["git", *arguments], cwd=root, check=True, text=True, encoding="utf-8", capture_output=True)
+    return subprocess.run(["git", *arguments], cwd=root, check=True, text=True, encoding="utf-8", capture_output=True, timeout=120, creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
 
 
 def check_push_scope(root):
@@ -315,7 +333,7 @@ def watch(root=ROOT, push=False):
                 ready = {name for name, signature in current.items() if previous.get(name) == signature}
                 sync(root, push=push, ready_sources=ready, push_only_on_change=True)
                 previous = current
-            except (OSError, ValueError, subprocess.CalledProcessError) as error:
+            except (OSError, ValueError, subprocess.SubprocessError) as error:
                 detail = error.stderr.strip() if isinstance(error, subprocess.CalledProcessError) else str(error)
                 print(f"[监控警告] {detail}；10 秒后重试。", file=sys.stderr)
             time.sleep(10)
@@ -334,7 +352,7 @@ def main():
             return watch(push=arguments.push)
         _, failed = sync(push=arguments.push)
         return 1 if failed else 0
-    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
         detail = error.stderr.strip() if isinstance(error, subprocess.CalledProcessError) else str(error)
         print(f"[错误] {detail}", file=sys.stderr)
         return 1
