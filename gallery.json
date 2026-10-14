@@ -1,31 +1,71 @@
 [
   {
-    "id": "20261014_001",
-    "title": "sync_test",
-    "source_file": "sync_test.png",
-    "image": "./images/20261014_001_sync_test.png",
-    "workflow_file": "./workflows/20261014_001.json",
-    "created_at": "2026-10-14 09:03:29",
-    "model": "mock-test-model.safetensors",
-    "positive": "metadata sync test, portrait girl, product bottle, landscape scenery",
-    "negative": "test negative, blurry, bad hands",
+    "id": "20261014_006",
+    "title": "StarOcean_2077_Benchmark",
+    "source_file": "StarOcean_2077_Benchmark.png",
+    "image": "./images/20261014_006_StarOcean_2077_Benchmark.png",
+    "workflow_file": "",
+    "created_at": "2026-10-10 20:49:21",
+    "model": "未知模型",
+    "positive": "",
+    "negative": "",
     "params": {
-      "seed": 123456,
-      "steps": 25,
-      "cfg": 7.0,
-      "sampler": "dpmpp_2m",
+      "seed": null,
+      "steps": null,
+      "cfg": null,
+      "sampler": "",
+      "scheduler": ""
+    },
+    "tags": [
+      "待分类"
+    ]
+  },
+  {
+    "id": "20261014_005",
+    "title": "Benchmark_Render_00001_",
+    "source_file": "Benchmark_Render_00001_.png",
+    "image": "./images/20261014_005_Benchmark_Render_00001_.png",
+    "workflow_file": "",
+    "created_at": "2026-10-10 20:49:21",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "positive": "masterpiece, best quality, cinematic fantasy illustration, 8k resolution, award winning digital painting, vertical 2:3 composition, midnight atmosphere, at top center a giant luminous blue moon occupying 35 percent of sky, mystical cool blue moonlight casting downwards, vast volumetric sea of rolling clouds below, ancient oriental fantasy city floating high above the cloud sea, in lower center of frame 1boy, solo, single human, viewed from behind, back to camera, facing away, facing the giant moon, height of boy is one third of canvas height, well proportioned body, natural anatomy, wearing white hoodie sweatshirt, black backpack on back, holding a transparent clear glass umbrella in left hand with realistic glass reflections and light refraction, right arm naturally hanging down at side, standing on wet dark reflective bluestone pavement with puddles, cast shadow stretching towards bottom-left, central straight pathway leading forward into distance towards the moon, on the left side of frame an ancient tall red five-story Chinese pagoda, on the right side of frame a suspended white stone bridge over clouds, layered traditional Chinese architecture with flying curved eaves, glowing warm orange lanterns hanging under eaves, strong color contrast between cool blue moonlight and soft warm orange lantern glow, volumetric fog and lighting, depth of field",
+    "negative": "front view, face, looking at camera, multiple people, two boys, crowd, girl, daytime, sun, deformed hands, extra limbs, extra fingers, missing fingers, malformed limbs, bad anatomy, wrong proportions, blurry, low quality, oversaturated, text, watermark, signature, logo, ugly, distorted",
+    "params": {
+      "seed": 2077520,
+      "steps": 28,
+      "cfg": 7.5,
+      "sampler": "dpmpp_2m_sde",
       "scheduler": "karras"
     },
     "tags": [
-      "人像",
-      "电商图",
-      "风景"
+      "人像"
+    ]
+  },
+  {
+    "id": "20261014_004",
+    "title": "Agent_Gen_00001_",
+    "source_file": "Agent_Gen_00001_.png",
+    "image": "./images/20261014_004_Agent_Gen_00001_.png",
+    "workflow_file": "",
+    "created_at": "2026-10-10 20:45:55",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "positive": "masterpiece, best quality, a cute robotic cat sitting on a windowsill at sunset, soft warm golden lighting, detailed fur and metallic elements, 8k resolution",
+    "negative": "",
+    "params": {
+      "seed": 636350521,
+      "steps": 20,
+      "cfg": 7.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    },
+    "tags": [
+      "待分类"
     ]
   },
   {
     "id": "portrait",
     "title": "霓虹人像",
-    "source_file": "portrait.png",
+    "source_file": "Gallery_v1_portrait_00001_.png",
     "image": "./assets/portrait.png",
     "workflow_file": "./workflows/001.json",
     "tags": [
@@ -46,7 +86,7 @@
   {
     "id": "landscape",
     "title": "云海山脊",
-    "source_file": "landscape.png",
+    "source_file": "Gallery_v1_landscape_00001_.png",
     "image": "./assets/landscape.png",
     "workflow_file": "./workflows/002.json",
     "tags": [
@@ -67,7 +107,7 @@
   {
     "id": "product",
     "title": "光影香水",
-    "source_file": "product.png",
+    "source_file": "Gallery_v1_product_00001_.png",
     "image": "./assets/product.png",
     "workflow_file": "./workflows/003.json",
     "tags": [

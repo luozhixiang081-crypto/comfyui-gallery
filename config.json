@@ -1,4 +1,4 @@
 {
-  "comfyui_output_dir": "./raw_output",
+  "comfyui_output_dir": "E:/ComfyUI_windows_portable/ComfyUI/output",
   "auto_git_push": false
 }

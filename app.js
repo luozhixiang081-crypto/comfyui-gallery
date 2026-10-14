@@ -10,6 +10,7 @@ const detailImageState = document.querySelector("#detail-image-state");
 const filters = [...document.querySelectorAll(".filter")];
 const workflowButton = document.querySelector("#download-workflow");
 const workflowNote = document.querySelector("#workflow-note");
+const searchInput = document.querySelector("#gallery-search");
 let artworks = [];
 let selectedArtwork = null;
 let activeTag = "全部";
@@ -64,11 +65,16 @@ function validateData(data) {
 }
 
 function renderGallery() {
-  const visible = artworks.filter(item => activeTag === "全部" || item.tags.includes(activeTag));
+  const keyword = searchInput.value.trim().toLowerCase();
+  const visible = artworks.filter(item =>
+    (activeTag === "全部" || item.tags.includes(activeTag)) &&
+    [item.title, item.positive, item.negative, item.model].some(value =>
+      (value || "").toLowerCase().includes(keyword))
+  );
   gallery.replaceChildren();
   count.textContent = `${String(visible.length).padStart(2, "0")} 件作品`;
   loadState.hidden = visible.length > 0;
-  loadState.textContent = "这个标签下还没有作品。";
+  loadState.textContent = keyword ? "没有匹配的作品，请尝试其他关键词或标签。" : "这个标签下还没有作品。";
 
   for (const item of visible) {
     const index = artworks.indexOf(item) + 1;
@@ -236,6 +242,7 @@ for (const button of filters) {
     renderGallery();
   });
 }
+searchInput.addEventListener("input", renderGallery);
 
 async function loadGallery() {
   try {

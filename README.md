@@ -1,4 +1,4 @@
-# ComfyUI 生图画廊 v2.0
+# ComfyUI 生图画廊 v2.1
 
 手机优先的纯静态单页，原生 HTML / CSS / JavaScript，无框架、无 npm 依赖、无构建步骤。前端与同步脚本统一使用 v2 数据格式。
 
@@ -6,7 +6,7 @@
 
 在项目目录运行 `python -m http.server 8080 --bind 127.0.0.1`，打开 `http://127.0.0.1:8080/`。不要直接双击 HTML，`file://` 不能正常 fetch JSON。
 
-手机 2 列，760px 起 3 列；支持人像 / 风景 / 电商图筛选、详情参数、正负提示词复制和真实 workflow JSON 下载。标题统一取 `title`，空值显示“未命名作品”。缺图、空数据、复制权限不足、下载失败均有提示，保留键盘焦点管理。
+手机 2 列，760px 起 3 列；支持人像 / 风景 / 电商图筛选、实时关键词搜索、详情参数、正负提示词复制和真实 workflow JSON 下载。搜索标题、正反提示词与模型名，不区分大小写、忽略关键词首尾空白，并与当前标签取交集。标题统一取 `title`，空值显示“未命名作品”。缺图、空数据、复制权限不足、下载失败均有提示，保留键盘焦点管理。
 
 ## 数据格式
 
@@ -38,7 +38,7 @@
 
 原有三条示例保留原图片、ID 与实际生图参数（DreamShaper 8、512×640、seed 14001/14002/14003）。`workflows/001.json`、`002.json`、`003.json` 从它们 PNG 的真实 prompt 元数据提取，是 ComfyUI **API 节点格式**，不是伪造的空占位，也不是 UI 布局格式；可作为 API 请求的 prompt。同步到的 workflow 则原样保留图片嵌入的 JSON 格式。
 
-自检记录 `sync_test` 是 64×80 的纯色测试 PNG，带模拟元数据，**不是模型生成作品**。
+v2.0 的模拟 `sync_test` 记录及对应归档图片、工作流、raw_output 测试源已在 v2.1 清理。原示例的 source_file 已通过原图 SHA-256 核验后修正为真实来源名，接入真实 output 不再重复收录三张示例。
 
 ## 本地自动同步
 
@@ -49,16 +49,18 @@ python -m pip install -r requirements.txt
 python sync_gallery.py
 ```
 
-`config.json` 默认：
+本机已定位真实目录，`config.json` 当前为：
 
 ```json
 {
-  "comfyui_output_dir": "./raw_output",
+  "comfyui_output_dir": "E:/ComfyUI_windows_portable/ComfyUI/output",
   "auto_git_push": false
 }
 ```
 
-把 ComfyUI PNG 放入 `raw_output/`；之后可将配置改为真实路径，例如 `E:/ComfyUI_windows_portable/ComfyUI/output`。相对路径以脚本目录为基准，不受终端当前目录影响。
+真实目录有 6 张 PNG，本轮新增 3 条、已收录跳过 3 条，画廊共 6 条。新增图片没有 workflow 元数据，因此不编造工作流；StarOcean_2077_Benchmark.png 连 prompt 元数据也没有，对应参数显示未知。
+
+需要离线试验时，可改为 `./raw_output` 并把自己的 PNG 放入该目录。相对路径以脚本目录为基准，不受终端当前目录影响。
 
 - 递归扫描 .png（大小写不限），以源目录内相对 `source_file` 去重；旧数据不覆盖，更新同名源文件也不会重新导入。
 - 图片按“日期序号 + 原名”归档到 `images/`，防止重名覆盖；新记录按文件修改时间由新到旧放在列表最前面。
@@ -67,6 +69,19 @@ python sync_gallery.py
 - uint64 seed 超过 JavaScript 安全整数时保存为十进制字符串，避免前端舍入。
 - gallery.json 原子替换、独占同步锁、失败时只清理本轮新文件；源图片不修改。进程异常退出若遗留锁，确认没有同步进程后删除 `.gallery-sync.lock` 再运行。
 - 切换源目录时同名 source_file 仍视为已收录；改变根目录前请确认不会与已有来源重名。
+
+## 实时监控（10 秒轮询）
+
+```powershell
+python sync_gallery.py --watch
+python sync_gallery.py --watch --push
+```
+
+前者只归档到本地，后者遇到新图会归档、提交并推送；config 的 auto_git_push=true 也会开启推送。使用标准库 time.sleep(10)，没有新增依赖。PNG 连续两次轮询的文件大小与修改时间相同后才导入，避免同步尚未写完的图（首次监控约 10 秒后导入，写入中会继续等待）。
+
+空闲时不执行 git push；网络推送失败会保留本地归档/提交，在后续轮询重试，不重复创建记录或提交。临时目录/解析错误会警告并继续；Ctrl+C 停止。原有“禁止夹带非同步改动或已有暂存”的保护保留。
+
+这是持续运行的终端程序，不会自动创建开机任务、Windows 服务或隐藏常驻进程。本次实现和测试后没有保留后台监控，需你运行上述命令开启。
 
 ## 可选 Git 推送
 
@@ -89,17 +104,14 @@ commit 保存本地版本；push 才会上传到 GitHub。不要把账号密码�
 ## 自检
 
 ```powershell
-python tests/create_test_png.py
-python sync_gallery.py
-python sync_gallery.py
 python -m unittest discover -s tests -v
 ```
 
-生成的测试 PNG 已存在时生成器拒绝覆盖；再次同步应新增 0 条。测试在独立临时目录进行，Git 推送测试只推到临时本地裸仓库，**不推送 GitHub**。
+15 项测试在独立临时目录进行；监控覆盖 10 秒间隔、写入稳定性、发现新图、空闲不推送、暂时错误恢复、失败 push 重试和 Ctrl+C 停止。Git 测试只推到临时本地裸仓库，**不推送 GitHub**，不会在真实 ComfyUI output 或画廊中制造测试记录。
 
 ## GitHub Pages
 
-v1 已上线：[查看画廊](https://luozhixiang081-crypto.github.io/comfyui-gallery/)。本轮 v2 改造与自检仅保存到本地并提交；推送 main 后才会更新线上页面。
+[查看画廊](https://luozhixiang081-crypto.github.io/comfyui-gallery/)。main 为发布分支；推送后由 GitHub Pages 更新线上页面。
 
 仓库 Settings → Pages 使用 Deploy from a branch → main → /(root)。根目录的 .nojekyll 已存在，不需要额外构建。该仓库公开，只应放可公开图片、提示词和工作流。
 

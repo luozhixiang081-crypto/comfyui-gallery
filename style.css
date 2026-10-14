@@ -34,6 +34,12 @@ h1 { margin: 0; font-size: clamp(36px, 5.4vw, 64px); letter-spacing: -.04em; lin
 .intro-copy { margin: 24px 0 0; color: var(--muted); font-size: 15px; line-height: 1.8; max-width: 65ch; }
 .intro-index { position: absolute; right: 0; bottom: 52px; color: #ffffff0a; font: 100px ui-monospace, monospace; letter-spacing: -.1em; pointer-events: none; }
 .collection-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 24px; }
+.search-field { display: flex; align-items: center; gap: 12px; min-height: 48px; margin-bottom: 20px; padding: 0 16px; border: 1px solid var(--line); border-radius: 14px; background: #ffffff05; backdrop-filter: blur(12px); color: var(--muted); }
+.search-field:focus-within { border-color: var(--cyan); outline: 2px solid #89e5e525; outline-offset: 2px; }
+.search-field svg { width: 20px; height: 20px; }
+.search-field input { min-width: 0; width: 100%; min-height: 48px; padding: 10px 0; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; font-size: 14px; }
+.search-field input::placeholder { color: var(--muted); }
+.search-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .filter { border: 1px solid transparent; border-radius: 100px; padding: 0 20px; background: transparent; font-size: 14px; color: var(--muted); }
 .filter:hover { background: #ffffff08; color: var(--text); }

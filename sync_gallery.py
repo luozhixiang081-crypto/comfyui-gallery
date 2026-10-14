@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 from PIL import Image, UnidentifiedImageError
 
@@ -197,8 +198,7 @@ def push_gallery(root):
     print("[Git] 推送成功。")
 
 
-def sync(root=ROOT, push=False):
-    root = Path(root).resolve()
+def configuration(root):
     config = read_json(root / "config.json")
     if not isinstance(config, dict) or not isinstance(config.get("comfyui_output_dir"), str) or not config["comfyui_output_dir"].strip() or type(config.get("auto_git_push")) is not bool:
         raise ValueError("config.json 需要非空 comfyui_output_dir 字符串和 auto_git_push 布尔值。")
@@ -206,6 +206,12 @@ def sync(root=ROOT, push=False):
     output = (output if output.is_absolute() else root / output).resolve()
     if not output.is_dir():
         raise ValueError(f"图片来源目录不存在：{output}")
+    return config, output
+
+
+def sync(root=ROOT, push=False, ready_sources=None, push_only_on_change=False):
+    root = Path(root).resolve()
+    config, output = configuration(root)
     push = push or config["auto_git_push"]
     with sync_lock(root):
         if push:
@@ -233,6 +239,8 @@ def sync(root=ROOT, push=False):
                 if source in known:
                     skipped += 1
                     continue
+                if ready_sources is not None and source not in ready_sources:
+                    continue
                 if not path.resolve().is_relative_to(output) or path.resolve().is_relative_to(images.resolve()):
                     failed += 1
                     print(f"[跳过] {source}：符号链接越界或归档目录回环。")
@@ -249,7 +257,7 @@ def sync(root=ROOT, push=False):
                     print(f"[跳过] {source}：图片读取失败（{error}）。")
                     continue
                 day = datetime.now().strftime("%Y%m%d")
-                serial = 1
+                serial = len(ids) + 1
                 name = re.sub(r"[^\w. -]", "_", path.stem).strip(". ") or "ComfyUI"
                 # Always prefix IDs to avoid name collisions and Windows reserved names.
                 while True:
@@ -282,16 +290,48 @@ def sync(root=ROOT, push=False):
                 path.unlink(missing_ok=True)
             raise
         print(f"[完成] 新增 {len(new)}，已收录跳过 {skipped}，失败 {failed}；共 {len(old) + len(new)} 条记录。")
-        if push:
+        pending_push = push and push_only_on_change and (
+            git(root, "status", "--porcelain", "--", "gallery.json", "images/", "workflows/").stdout.strip() or
+            int(git(root, "rev-list", "--count", "@{u}..HEAD").stdout.strip()) > 0
+        )
+        if push and (new or not push_only_on_change or pending_push):
             push_gallery(root)
         return len(new), failed
+
+
+def watch(root=ROOT, push=False):
+    root = Path(root).resolve()
+    previous = {}
+    print("[监控] 每 10 秒轮询；新 PNG 连续两次大小/修改时间不变后导入，Ctrl+C 停止。")
+    try:
+        while True:
+            try:
+                _, output = configuration(root)
+                current = {}
+                for path in output.rglob("*"):
+                    if path.is_file() and path.suffix.lower() == ".png":
+                        stat = path.stat()
+                        current[path.relative_to(output).as_posix()] = (stat.st_size, stat.st_mtime_ns)
+                ready = {name for name, signature in current.items() if previous.get(name) == signature}
+                sync(root, push=push, ready_sources=ready, push_only_on_change=True)
+                previous = current
+            except (OSError, ValueError, subprocess.CalledProcessError) as error:
+                detail = error.stderr.strip() if isinstance(error, subprocess.CalledProcessError) else str(error)
+                print(f"[监控警告] {detail}；10 秒后重试。", file=sys.stderr)
+            time.sleep(10)
+    except KeyboardInterrupt:
+        print("[监控] 已停止。")
+        return 0
 
 
 def main():
     parser = argparse.ArgumentParser(description="增量同步 ComfyUI PNG 到静态画廊。")
     parser.add_argument("--push", action="store_true", help="同步后提交并推送（仓库不得有非同步改动）。")
+    parser.add_argument("--watch", action="store_true", help="每 10 秒监控 PNG；可与 --push 一起使用。")
     arguments = parser.parse_args()
     try:
+        if arguments.watch:
+            return watch(push=arguments.push)
         _, failed = sync(push=arguments.push)
         return 1 if failed else 0
     except (OSError, ValueError, subprocess.CalledProcessError) as error:

@@ -189,6 +189,78 @@ class SyncTests(unittest.TestCase):
             sync.sync(self.root, push=True)
         self.assertIn("unrelated.txt", sync.git(self.root, "diff", "--cached", "--name-only").stdout)
 
+    def test_watch_stable_files_and_push_only_on_changes(self):
+        self.prepare_git()
+        self.png()
+        sleeps = 0
+
+        def tick(seconds):
+            nonlocal sleeps
+            self.assertEqual(seconds, 10)
+            sleeps += 1
+            if sleeps == 1:
+                self.assertEqual(len(self.records()), 1)
+            elif sleeps == 2:
+                self.assertEqual(len(self.records()), 2)
+                self.png("next.png")
+            elif sleeps == 3:
+                self.assertEqual(len(self.records()), 2)
+            else:
+                self.assertEqual(len(self.records()), 3)
+                raise KeyboardInterrupt
+
+        with patch.object(sync.time, "sleep", side_effect=tick), patch.object(sync, "push_gallery", wraps=sync.push_gallery) as pushing:
+            self.assertEqual(sync.watch(self.root, push=True), 0)
+            self.assertEqual(pushing.call_count, 2)
+        self.assertEqual(sync.git(self.root, "rev-parse", "HEAD").stdout, sync.git(self.root, "rev-parse", "origin/main").stdout)
+
+    def test_watch_defers_changing_png(self):
+        self.png()
+        sleeps = 0
+
+        def tick(seconds):
+            nonlocal sleeps
+            self.assertEqual(seconds, 10)
+            sleeps += 1
+            if sleeps == 1:
+                graph = graph_fixture()
+                graph["positive"]["inputs"]["text"] += " still writing another portion of metadata"
+                self.png(prompt=graph)
+            if sleeps < 3:
+                self.assertEqual(len(self.records()), 1)
+            else:
+                self.assertEqual(len(self.records()), 2)
+                raise KeyboardInterrupt
+
+        with patch.object(sync.time, "sleep", side_effect=tick):
+            self.assertEqual(sync.watch(self.root), 0)
+
+    def test_watch_recovers_from_transient_error(self):
+        with patch.object(sync, "sync", side_effect=[ValueError("temporary error"), (0, 0)]) as synchronizing, patch.object(sync.time, "sleep", side_effect=[None, KeyboardInterrupt]):
+            self.assertEqual(sync.watch(self.root), 0)
+            self.assertEqual(synchronizing.call_count, 2)
+
+    def test_watch_retries_failed_push_without_duplicate_commit(self):
+        self.prepare_git()
+        self.png()
+        original_git = sync.git
+        pushes = 0
+
+        def offline_once(root, *arguments):
+            nonlocal pushes
+            if arguments == ("push",):
+                pushes += 1
+                if pushes == 1:
+                    raise subprocess.CalledProcessError(1, ["git", "push"], stderr="simulated offline")
+            return original_git(root, *arguments)
+
+        with patch.object(sync, "git", side_effect=offline_once), patch.object(sync.time, "sleep", side_effect=[None, None, KeyboardInterrupt]):
+            self.assertEqual(sync.watch(self.root, push=True), 0)
+        self.assertEqual(pushes, 2)
+        self.assertEqual(len(self.records()), 2)
+        self.assertEqual(sync.git(self.root, "log", "--format=%s").stdout.splitlines().count("auto sync gallery"), 1)
+        self.assertEqual(sync.git(self.root, "rev-parse", "HEAD").stdout, sync.git(self.root, "rev-parse", "origin/main").stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
