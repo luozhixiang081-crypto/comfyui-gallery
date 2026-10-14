@@ -91,15 +91,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install_watcher.ps1
 
 启动器复用原监控函数，使用 pythonw 隐藏运行；任务以当前用户普通权限执行，在该用户登录 30 秒后自动启动，并立即启动一次。**这是开机登录后自启，不是未登录就运行的系统服务**；不保存 Windows 或 GitHub 密码，沿用当前用户 Git Credential Manager 授权。退出登录或关机期间不运行，睡眠期间暂停；恢复运行后补扫未收录的 PNG。
 
-计划任务禁止重复实例、无运行时长上限、不因电池供电停止；进程异常退出后每分钟重启，最多重试 999 次。Git 调用超时为 120 秒，网络/授权失败写日志并后续重试，不弹出登录窗口。授权失效时仍需要人工重新授权；存在其他未提交代码改动时安全暂停同步，需先提交，避免夹带上传。
+计划任务禁止重复实例、无运行时长上限、不因电池供电停止；配置失败重启（每分钟，最多 999 次），另每分钟触发一次兜底检查：已运行则跳过，未运行则重新启动，也能恢复被强制结束的进程。Git 调用超时为 120 秒，网络/授权失败写日志并后续重试，不弹出登录窗口。授权失效时仍需要人工重新授权；存在其他未提交代码改动时安全暂停同步，需先提交，避免夹带上传。
 
 日志：`.local/watcher.log`（UTF-8，2 MiB × 当前文件及 3 个备份，约 8 MiB 上限），已忽略，不上传。Git 绝对目录由安装器写入任务参数；若移动 Python、Git 或项目目录，请重新安装任务。后台运行不依赖 Codex 窗口，但使用现有 Codex 随附 Git；若将其卸载，需安装 Git 并重新注册任务。
 
 ```powershell
 Get-ScheduledTask -TaskName ComfyUI-Gallery-Watcher
 Get-Content .\.local\watcher.log -Tail 15
-Stop-ScheduledTask -TaskName ComfyUI-Gallery-Watcher   # 本次停止，下次登录仍自启
-Disable-ScheduledTask -TaskName ComfyUI-Gallery-Watcher # 关闭自启
+Disable-ScheduledTask -TaskName ComfyUI-Gallery-Watcher # 先关闭自启和兜底检查
+Stop-ScheduledTask -TaskName ComfyUI-Gallery-Watcher    # 再停止当前进程
 # 重新开启：Enable-ScheduledTask -TaskName ComfyUI-Gallery-Watcher
 # 立即启动：Start-ScheduledTask -TaskName ComfyUI-Gallery-Watcher
 ```
