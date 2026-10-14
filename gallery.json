@@ -1,38 +1,88 @@
 [
   {
+    "id": "20261014_001",
+    "title": "sync_test",
+    "source_file": "sync_test.png",
+    "image": "./images/20261014_001_sync_test.png",
+    "workflow_file": "./workflows/20261014_001.json",
+    "created_at": "2026-10-14 09:03:29",
+    "model": "mock-test-model.safetensors",
+    "positive": "metadata sync test, portrait girl, product bottle, landscape scenery",
+    "negative": "test negative, blurry, bad hands",
+    "params": {
+      "seed": 123456,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras"
+    },
+    "tags": [
+      "人像",
+      "电商图",
+      "风景"
+    ]
+  },
+  {
     "id": "portrait",
-    "img": "./assets/portrait.png",
-    "prompt": "cinematic portrait photograph of a young adult woman with a short black bob haircut, wearing a black jacket, neon violet and cyan rim lighting, dark background, editorial fashion photography, detailed face, shallow depth of field, masterpiece, best quality",
-    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "title": "霓虹人像",
+    "source_file": "portrait.png",
+    "image": "./assets/portrait.png",
+    "workflow_file": "./workflows/001.json",
+    "tags": [
+      "人像"
+    ],
+    "created_at": "2026-10-14 08:16:13",
     "model": "dreamshaper_8_pruned.safetensors",
-    "seed": 14001,
-    "steps": 20,
-    "cfg": 7,
-    "sampler": "euler_ancestral",
-    "tags": ["人像"]
+    "positive": "cinematic portrait photograph of a young adult woman with a short black bob haircut, wearing a black jacket, neon violet and cyan rim lighting, dark background, editorial fashion photography, detailed face, shallow depth of field, masterpiece, best quality",
+    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "params": {
+      "seed": 14001,
+      "steps": 20,
+      "cfg": 7,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    }
   },
   {
     "id": "landscape",
-    "img": "./assets/landscape.png",
-    "prompt": "cinematic landscape photograph, towering alpine mountain peaks above a sea of clouds, violet twilight sky, turquoise glacial lake in the foreground, serene wilderness, atmospheric depth, detailed landscape, masterpiece, best quality",
-    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "title": "云海山脊",
+    "source_file": "landscape.png",
+    "image": "./assets/landscape.png",
+    "workflow_file": "./workflows/002.json",
+    "tags": [
+      "风景"
+    ],
+    "created_at": "2026-10-14 08:16:17",
     "model": "dreamshaper_8_pruned.safetensors",
-    "seed": 14002,
-    "steps": 20,
-    "cfg": 7,
-    "sampler": "euler_ancestral",
-    "tags": ["风景"]
+    "positive": "cinematic landscape photograph, towering alpine mountain peaks above a sea of clouds, violet twilight sky, turquoise glacial lake in the foreground, serene wilderness, atmospheric depth, detailed landscape, masterpiece, best quality",
+    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "params": {
+      "seed": 14002,
+      "steps": 20,
+      "cfg": 7,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    }
   },
   {
     "id": "product",
-    "img": "./assets/product.png",
-    "prompt": "luxury product photograph of one minimal clear glass perfume bottle with a black cap, on a dark stone pedestal, cyan and violet studio lighting, reflective glass, sharp focus, elegant commercial photography, no label, no text, masterpiece, best quality",
-    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "title": "光影香水",
+    "source_file": "product.png",
+    "image": "./assets/product.png",
+    "workflow_file": "./workflows/003.json",
+    "tags": [
+      "电商图"
+    ],
+    "created_at": "2026-10-14 08:16:20",
     "model": "dreamshaper_8_pruned.safetensors",
-    "seed": 14003,
-    "steps": 20,
-    "cfg": 7,
-    "sampler": "euler_ancestral",
-    "tags": ["电商图"]
+    "positive": "luxury product photograph of one minimal clear glass perfume bottle with a black cap, on a dark stone pedestal, cyan and violet studio lighting, reflective glass, sharp focus, elegant commercial photography, no label, no text, masterpiece, best quality",
+    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "params": {
+      "seed": 14003,
+      "steps": 20,
+      "cfg": 7,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    }
   }
 ]

@@ -52,6 +52,7 @@ h1 { margin: 0; font-size: clamp(36px, 5.4vw, 64px); letter-spacing: -.04em; lin
 .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--purple); font-size: 12px; }
 .card-number { color: var(--muted); font: 11px ui-monospace, monospace; }
 .card-title { display: block; margin-top: 12px; font-size: 17px; font-weight: 550; }
+.card-title, h2 { overflow-wrap: anywhere; }
 .card-model { display: block; margin-top: 8px; color: var(--muted); font: 11px ui-monospace, monospace; overflow-wrap: anywhere; line-height: 1.5; }
 .image-fallback { display: grid; place-content: center; text-align: center; gap: 8px; padding: 20px; color: var(--muted); }
 .image-fallback small { font-size: 11px; }
@@ -63,11 +64,13 @@ h1 { margin: 0; font-size: clamp(36px, 5.4vw, 64px); letter-spacing: -.04em; lin
 .art-dialog { width: min(960px, calc(100% - 32px)); max-height: min(90vh, 1000px); max-height: min(90dvh, 1000px); padding: 0; background: #18191df5; color: var(--text); border: 1px solid #ffffff24; border-radius: 24px; box-shadow: 0 24px 100px #0009; overflow: auto; }
 .art-dialog::backdrop { background: #07080bc9; backdrop-filter: blur(10px); }
 .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px; border-bottom: 1px solid var(--line); }
+.dialog-header > div { min-width: 0; }
 .detail-eyebrow { margin: 0 0 8px; color: var(--purple); font: 11px ui-monospace, monospace; }
 h2 { margin: 0; font-size: 21px; font-weight: 600; }
 .close-button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: #ffffff05; }
 .close-button:hover { background: #ffffff15; }
 .close-button svg { width: 22px; height: 22px; }
+.close-button { flex-shrink: 0; }
 .dialog-content { display: grid; grid-template-columns: minmax(0, 1fr); }
 .detail-image-wrap { padding: 24px 24px 0; background: #111215; }
 .detail-image-wrap img { display: block; width: 100%; max-height: 50vh; object-fit: contain; border-radius: 12px; }
@@ -91,6 +94,8 @@ dd { margin: 0; font: 12px/1.6 ui-monospace, monospace; font-variant-numeric: ta
 .workflow-section { border-top: 1px solid var(--line); margin-top: 24px; padding-top: 24px; }
 .workflow-button { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; width: 100%; min-height: 48px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #ffffff04; font-size: 12px; cursor: not-allowed; color: var(--muted); }
 .workflow-button svg { width: 16px; height: 16px; }
+.workflow-button:not(:disabled) { cursor: pointer; color: var(--cyan); border-color: #89e5e54a; }
+.workflow-button:not(:disabled):hover { background: #89e5e510; }
 .workflow-button span { font-size: 10px; padding: 3px 6px; background: #ffffff08; border-radius: 4px; }
 #workflow-note { color: var(--muted); font-size: 11px; text-align: center; margin: 12px 0 0; }
 .copy-status { min-height: 18px; margin: 16px 0 0; color: var(--cyan); font-size: 12px; }

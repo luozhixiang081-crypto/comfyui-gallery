@@ -18,7 +18,7 @@
         <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2 29 9.5v13L16 30 3 22.5v-13L16 2Z" stroke="currentColor" stroke-width="1.5"/><path d="m10 12 6-3.5 6 3.5v7L16 22.5 10 19v-7Z" fill="currentColor"/><path d="M16 2v6.5M29 22.5 22 19M3 22.5l7-3.5" stroke="currentColor" stroke-width="1.5"/></svg>
         <span>ComfyUI <span class="brand-light">Gallery</span></span>
       </a>
-      <span class="version">原型 v1</span>
+      <span class="version">v2.0</span>
     </header>
 
     <main>
@@ -45,7 +45,7 @@
       </section>
     </main>
 
-    <footer class="site-footer"><span>灵感有迹可循。</span><span>3 条示例作品 · 本地 ComfyUI 生成</span></footer>
+    <footer class="site-footer"><span>灵感有迹可循。</span><span id="footer-count">ComfyUI 画廊</span></footer>
   </div>
 
   <dialog class="art-dialog" id="art-dialog" aria-labelledby="dialog-title">
@@ -72,11 +72,11 @@
           <dl id="detail-parameters"></dl>
         </section>
         <div class="workflow-section">
-          <button class="workflow-button" type="button" disabled aria-describedby="workflow-note">
+          <button class="workflow-button" id="download-workflow" type="button" disabled aria-describedby="workflow-note">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            下载 workflow JSON <span>稍后开放</span>
+            下载 workflow JSON
           </button>
-          <p id="workflow-note">v1 暂未提供 workflow 文件。</p>
+          <p id="workflow-note" role="status">此图片未附带有效 workflow 元数据。</p>
         </div>
         <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
       </div>

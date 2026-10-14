@@ -18,3 +18,7 @@ playwright-report/
 *.pth
 .DS_Store
 Thumbs.db
+# Local input images and sync lock (archived images/workflows are published)
+raw_output/
+.gallery-sync.lock
+*.sync-tmp
