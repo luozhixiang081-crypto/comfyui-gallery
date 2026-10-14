@@ -1,0 +1,38 @@
+[
+  {
+    "id": "portrait",
+    "img": "./assets/portrait.png",
+    "prompt": "cinematic portrait photograph of a young adult woman with a short black bob haircut, wearing a black jacket, neon violet and cyan rim lighting, dark background, editorial fashion photography, detailed face, shallow depth of field, masterpiece, best quality",
+    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "seed": 14001,
+    "steps": 20,
+    "cfg": 7,
+    "sampler": "euler_ancestral",
+    "tags": ["人像"]
+  },
+  {
+    "id": "landscape",
+    "img": "./assets/landscape.png",
+    "prompt": "cinematic landscape photograph, towering alpine mountain peaks above a sea of clouds, violet twilight sky, turquoise glacial lake in the foreground, serene wilderness, atmospheric depth, detailed landscape, masterpiece, best quality",
+    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "seed": 14002,
+    "steps": 20,
+    "cfg": 7,
+    "sampler": "euler_ancestral",
+    "tags": ["风景"]
+  },
+  {
+    "id": "product",
+    "img": "./assets/product.png",
+    "prompt": "luxury product photograph of one minimal clear glass perfume bottle with a black cap, on a dark stone pedestal, cyan and violet studio lighting, reflective glass, sharp focus, elegant commercial photography, no label, no text, masterpiece, best quality",
+    "negative": "low quality, blurry, distorted, bad anatomy, bad hands, text, watermark, logo",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "seed": 14003,
+    "steps": 20,
+    "cfg": 7,
+    "sampler": "euler_ancestral",
+    "tags": ["电商图"]
+  }
+]
