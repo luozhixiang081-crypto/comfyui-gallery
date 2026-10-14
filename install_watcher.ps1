@@ -37,7 +37,7 @@ $recoveryTrigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -
 $principal = New-ScheduledTaskPrincipal -UserId $account -LogonType Interactive -RunLevel Limited
 $settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 $definition = New-ScheduledTask -Action $action -Trigger @($trigger, $recoveryTrigger) -Principal $principal -Settings $settings -Description 'ComfyUI gallery: hidden watcher with auto push; logon startup and 1-minute recovery check; no duplicate instances.'
-if ($existing) { Set-ScheduledTask -TaskName $taskName -InputObject $definition | Out-Null }
+if ($existing) { Register-ScheduledTask -TaskName $taskName -InputObject $definition -Force | Out-Null }
 else { Register-ScheduledTask -TaskName $taskName -InputObject $definition | Out-Null }
 Start-ScheduledTask -TaskName $taskName
 Get-ScheduledTask -TaskName $taskName | Select-Object TaskName, State
