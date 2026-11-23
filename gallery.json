@@ -1,5 +1,47 @@
 [
   {
+    "id": "20261123_017",
+    "title": "0427_LunchHero_final_22_00001_",
+    "source_file": "0427_LunchHero_final_22_00001_.png",
+    "image": "./images/20261123_017_0427_LunchHero_final_22_00001_.png",
+    "workflow_file": "",
+    "created_at": "2026-11-23 21:55:59",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "positive": "a surreal collectible stop motion mascot: a polished silver old fashioned bento lunchbox on two short legs and orange-red perforated rubber clogs, funny crooked eyebrows, googly eyes, small white-gloved hands, 3d object photography on warm peach paper studio cyclorama, vintage Japanese advertising photograph, tactile brushed metal, confident deadpan expression, coherent materials, crisp focus, soft ground shadow",
+    "negative": "text, additional character, arms detached, smears, watermark, brand, clutter, distorted shoes",
+    "params": {
+      "seed": 929,
+      "steps": 30,
+      "cfg": 6.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    },
+    "tags": [
+      "待分类"
+    ]
+  },
+  {
+    "id": "20261123_016",
+    "title": "0427_LunchHero_final_15_00001_",
+    "source_file": "0427_LunchHero_final_15_00001_.png",
+    "image": "./images/20261123_016_0427_LunchHero_final_15_00001_.png",
+    "workflow_file": "",
+    "created_at": "2026-11-23 21:55:53",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "positive": "a surreal collectible stop motion mascot: a polished silver old fashioned bento lunchbox on two short legs and orange-red perforated rubber clogs, funny crooked eyebrows, googly eyes, small white-gloved hands, 3d object photography on warm peach paper studio cyclorama, vintage Japanese advertising photograph, tactile brushed metal, confident deadpan expression, coherent materials, crisp focus, soft ground shadow",
+    "negative": "text, additional character, arms detached, smears, watermark, brand, clutter, distorted shoes",
+    "params": {
+      "seed": 922,
+      "steps": 30,
+      "cfg": 6.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    },
+    "tags": [
+      "待分类"
+    ]
+  },
+  {
     "id": "20261123_015",
     "title": "0427_LunchHero_mixed_33_00001_",
     "source_file": "0427_LunchHero_mixed_33_00001_.png",
