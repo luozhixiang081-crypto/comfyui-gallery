@@ -1,5 +1,27 @@
 [
   {
+    "id": "20261123_010",
+    "title": "0427_LunchHero_v2_1_00001_",
+    "source_file": "0427_LunchHero_v2_1_00001_.png",
+    "image": "./images/20261123_010_0427_LunchHero_v2_1_00001_.png",
+    "workflow_file": "",
+    "created_at": "2026-11-23 21:49:25",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "positive": "a vinyl designer toy character, walking on two rubbery black cartoon legs, (wearing large tomato-red crocs shoes:1.4), (two large cartoon eyes on a box:1.25), his body is one rectangular metal lunchbox, without a separate head, funny expressive grumpy retro robot, rivets, silvery lunch tin body, vintage 1930s rubber hose cartoon made into a real collectible figure, clean pale apricot studio backdrop, soft cinematic lighting, full-length portrait showing both shoes, medium shot, three quarters facing camera, studio product design magazine photography, no other items",
+    "negative": "humanoid human body, person, person in costume, anime girl, open mouth, text, logo, watermarks, collage, open container, food, photograph of only a bento, long legs, cropped head, cropped feet, out of frame, weapons, intricate machinery, wire mess",
+    "params": {
+      "seed": 1357288,
+      "steps": 25,
+      "cfg": 7.4,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    },
+    "tags": [
+      "人像",
+      "电商图"
+    ]
+  },
+  {
     "id": "20261123_009",
     "title": "0427_LunchHero_v1_3_00001_",
     "source_file": "0427_LunchHero_v1_3_00001_.png",
