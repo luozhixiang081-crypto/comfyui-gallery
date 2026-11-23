@@ -1,5 +1,26 @@
 [
   {
+    "id": "20261123_007",
+    "title": "0427_LunchHero_v1_1_00001_",
+    "source_file": "0427_LunchHero_v1_1_00001_.png",
+    "image": "./images/20261123_007_0427_LunchHero_v1_1_00001_.png",
+    "workflow_file": "",
+    "created_at": "2026-11-23 21:46:28",
+    "model": "dreamshaper_8_pruned.safetensors",
+    "positive": "wide shot, entire character in frame, product photograph of an anthropomorphic (silver rectangular stainless steel school lunchbox with fitted metal lid and two toggle latches:1.35), a funny small box-shaped industrial designer toy, its body is a closed metal food tin, tiny half-lidded unimpressed eyes on front, thick stubby legs wearing (oversized cherry red rubber clogs with holes:1.35), mid step, sculpted metal, brushed aluminium reflections, 3/4 front view, isolated on a solid warm pale peach backdrop, simple seamless studio floor, cast shadow, simple deadpan expression, carefully styled original editorial mascots, realistic model photography, clean uncluttered graphic composition",
+    "negative": "human, human head, person, child, boy, girl, people, open lid, food, rice, fruit, handle arch, screen, camera, television, toaster, round can, crowded image, duplicate figure, group, text, logo, letters, watermark, caption, battle robot, mechanical joints, complex wires, collage, cropped feet",
+    "params": {
+      "seed": 80665551,
+      "steps": 26,
+      "cfg": 7.6,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal"
+    },
+    "tags": [
+      "电商图"
+    ]
+  },
+  {
     "id": "20261014_006",
     "title": "StarOcean_2077_Benchmark",
     "source_file": "StarOcean_2077_Benchmark.png",
